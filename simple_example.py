@@ -6,8 +6,7 @@ from random import gauss, uniform, seed
 from simple_pid import PID
 import time
 
-### initialize PID controller
-nt = 100
+### parameters
 storage = 0
 total_time = 1
 ny = 6
@@ -17,6 +16,7 @@ setpoint_sin_amp = 2
 setpoint_sin_period = total_time / ny
 sample_time = total_time / ny / 365
 max_release = np.inf
+max_storage = 10
 inflow_base = 20
 use_inflow_sin = True
 inflow_sin_amp = 4
@@ -36,10 +36,9 @@ seed(3)
 pid_params = -np.array([100, 1000, 0])  ## good for sinusoidal inflow & set point, gauss + jump noise
 
 
-### initialize reservoir
+### reservoir class
 class Reservoir:
     def __init__(self, storage_0=0):
-        self.nt = nt
         self.inflow = 0.
         self.inflow_rand_walk = 0.
         self.storage = storage_0
@@ -70,6 +69,9 @@ class Reservoir:
             release = release_target + self.storage / dt
             self.storage = 0
             return self.storage, self.inflow, release
+        elif self.storage > max_storage:
+            release = release_target + (self.storage - max_storage)
+            self.storage = max_storage
         else:
             return self.storage, self.inflow, release_target
 
@@ -84,7 +86,6 @@ start_time = time.time()
 last_time = start_time
 
 ### now run simulation, calling PID controller each time to keep reservoir storage constant.
-inflow_gauss_walk = 0.
 while time.time() - start_time < total_time:
     current_time = time.time()
     dt = current_time - last_time
