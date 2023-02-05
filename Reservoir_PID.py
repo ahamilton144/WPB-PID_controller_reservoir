@@ -6,7 +6,7 @@ from simple_pid import PID
 import time
 
 ### general parameters
-total_time = 1
+total_time = 0.1
 ny = 6
 sample_time = total_time / ny / 365   ### this is equivalent to daily update of controller
 
@@ -32,12 +32,14 @@ target_sin_amp = 2
 target_sin_period = total_time / ny
 
 ### PID controller parameters
+# PID_params = -np.array([0, 0, 0]) ## no control
 # PID_params = -np.array([10, 100, 0]) ## good for constant inflow, slow approach
-# PID_params = -np.array([100, 1000, 0]) ## good for constant inflow, fast approach
-# PID_params = -np.array([100, 1000, 0])  ## good for sinusoidal inflow
-# PID_params = -np.array([100, 1000, 0])  ## good for sinusoidal inflow & set point
-# PID_params = -np.array([100, 1000, 0])  ## good for sinusoidal inflow & set point, gauss noise
-PID_params = -np.array([100, 1000, 0])  ## good for sinusoidal inflow & set point, gauss + jump noise
+# PID_params = -np.array([100, 5000, 0]) ## good for constant inflow, fast approach
+# PID_params = -np.array([100, 5000, 0])  ## good for sinusoidal inflow
+# PID_params = -np.array([100, 5000, 0])  ## good for sinusoidal inflow & set point
+# PID_params = -np.array([100, 5000, 0])  ## good for sinusoidal inflow & set point, gauss noise
+# PID_params = -np.array([300, 5000, 0])  ## good for sinusoidal inflow & set point, gauss + jump noise
+PID_params = -np.array([20, 500, 0])  ## lower variability policy for sinusoidal inflow & set point, gauss + jump noise
 
 
 
@@ -106,7 +108,7 @@ class Reservoir_PID:
             self.release = release_target + self.storage / dt
             self.storage = 0
         elif self.storage > max_storage:
-            self.release = release_target + (self.storage - max_storage)
+            self.release = release_target + (self.storage - max_storage) / dt
             self.storage = max_storage
         else:
             self.release = release_target
