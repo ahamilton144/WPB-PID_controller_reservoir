@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from math import pi, sin, cos
 from random import gauss, uniform, seed
 from simple_pid import PID
-import time
 
 ### general parameters
 ny = 6
@@ -45,7 +44,8 @@ target_sin_amp = 2
 PID_params = -np.array([15, 100, 0])  ## lower variability policy for sinusoidal inflow & set point, gauss + jump noise
 
 ### set random seed for consistent results
-seed(0)
+rseed = 0
+seed(rseed)
 
 ### reservoir class
 class Reservoir_PID:
@@ -66,7 +66,7 @@ class Reservoir_PID:
 
     def update_inflow(self):
         '''
-        Method for updating the inflow of the reservoir each time step. Depending on parameters (see top of page),
+        Method for updating the inflow of the reservoir each time step (self.t). Depending on parameters (see top of page),
         this can be (a) constant inflow, (b) combination of seasonally varying sinusoids,
         (c) b plus noise in the form of a Gaussian random walk, or (d) c plus a random jump process.
         :return: None
@@ -89,7 +89,7 @@ class Reservoir_PID:
     def update_reservoir(self, t):
         '''
         Method for updating the reservoir each time step. This involves updating the current inflow and
-        the seasonally-varying target, then getting the prescribed release from the PID controller, potentially
+        the seasonally-varying target, getting the prescribed release from the PID controller, potentially
         modifying this release to ensure mass balance, and finally updating the storage.
         :param t: Total elapsed time (years) since simulation began.
         :return: None
@@ -117,12 +117,11 @@ class Reservoir_PID:
             self.release = release_target
 
 
-### set up for simulation
+### lists to store results
 storages, inflows, releases, targets = [storage_0], [], [], []
-reservoir = Reservoir_PID()
 
-start_time = time.time()
-last_time = start_time
+### initialize reservoir
+reservoir = Reservoir_PID()
 
 ### now run simulation, calling PID controller each time to keep reservoir storage constant.
 for t in np.arange(0, ny+0.01, dt):
@@ -150,4 +149,4 @@ axs[0].set_ylabel('Flow (MAF/year)')
 axs[1].set_ylabel('Storage (MAF)')
 
 # plt.show()
-plt.savefig(f'figs/PID_{PID_params[0]}_{PID_params[1]}_{PID_params[2]}_inflowSin{use_inflow_sin}_inflowRand{use_inflow_rand_walk}_inflowJump{use_inflow_jump}_targetSin{use_target_sin}_seed{seed}.png', dpi=300, bbox_inches='tight')
+plt.savefig(f'figs/PID_{PID_params[0]}_{PID_params[1]}_{PID_params[2]}_inflowSin{use_inflow_sin}_inflowRand{use_inflow_rand_walk}_inflowJump{use_inflow_jump}_targetSin{use_target_sin}_seed{rseed}.png', dpi=300, bbox_inches='tight')
