@@ -18,7 +18,7 @@ use_inflow_rand_walk = True
 inflow_rand_walk_sd = 0.1
 use_inflow_jump = True
 inflow_jump_prob = 0.01
-inflow_jump_amp = 2
+inflow_jump_amp = 4
 
 ### reservoir parameters
 storage_0 = 0
@@ -32,10 +32,14 @@ target_sin_amp = 2
 # PID_params = -np.array([0, 0, 0]) ## no control
 # PID_params = -np.array([1, 0, 0]) ## insufficient release to avoid filling up
 # PID_params = -np.array([15, 0, 0]) ## better control, but leads to steady state error
+# PID_params = -np.array([150, 0, 0]) ## better control, but leads to steady state error
 # PID_params = -np.array([15, 10000, 0]) ## integral control reduces error to 0 over time
 # PID_params = -np.array([150, 100000, 0]) ## increase controls more for faster equilibrium
-# PID_params = -np.array([15, 10000, 0.0005]) ## sequence to show oscillations in D control
+# PID_params = -np.array([15, 100, 0]) ## sequence to show impact of I param
+# PID_params = -np.array([15, 10000, 0]) ## sequence to show impact of I param
+# PID_params = -np.array([15, 1000000, 0]) ## sequence to show impact of I param
 # PID_params = -np.array([15, 10000, 0.001]) ## sequence to show oscillations in D control
+# PID_params = -np.array([15, 10000, 0.0025]) ## sequence to show oscillations in D control
 # PID_params = -np.array([15, 10000, 0.005]) ## sequence to show oscillations in D control
 # PID_params = -np.array([150, 100000, 0])  ## good for sinusoidal inflow
 # PID_params = -np.array([150, 100000, 0])  ## good for sinusoidal inflow & set point
@@ -44,7 +48,7 @@ target_sin_amp = 2
 PID_params = -np.array([15, 100, 0])  ## lower variability policy for sinusoidal inflow & set point, gauss + jump noise
 
 ### set random seed for consistent results
-rseed = 0
+rseed = 2
 seed(rseed)
 
 ### reservoir class
